@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "AI-INTERVIEW-SIMULATOR",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karanbaliyan28/Mockly.git"
+  },
+  "keywords": [
+    "ai",
+    "interview",
+    "simulator"
+  ],
+  "author": "KARAN BALIYAN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karanbaliyan28/Mockly/issues"
+  },
+  "homepage": "https://github.com/karanbaliyan28/Mockly#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.16.4",
+    "nodemon": "^3.1.10"
+  }
+}
