@@ -1,22 +1,43 @@
+// import { create } from 'zustand';
+
+// // Get user info from local storage if it exists
+// const userInfoFromStorage = localStorage.getItem('userInfo')
+//   ? JSON.parse(localStorage.getItem('userInfo'))
+//   : null;
+
+// const useAuthStore = create((set) => ({
+//   // The user state is now initialized from local storage
+//   user: userInfoFromStorage,
+
+//   // isAuthenticated is now a derived value, not a separate state.
+//   // This is safer because the auth status always matches the user data.
+//   isAuthenticated: !!userInfoFromStorage,
+
+//   // The logout function now clears local storage and resets the state.
+//   logout: () => {
+//     localStorage.removeItem('userInfo');
+//     set({ user: null, isAuthenticated: false });
+//     console.log('User logged out and session cleared.');
+//   },
+// }));
+
+
+
+
+
 import { create } from 'zustand';
 
 const useAuthStore = create((set) => ({
-  // For demonstration, we assume the user is logged in.
-  // In a real app, this would be null initially and set after login.
-  user: { name: 'Karan' },
-  isAuthenticated: true,
-
-  // The logout function clears user data and sets isAuthenticated to false.
+  isAuthenticated: !!localStorage.getItem('userInfo'), // Check localStorage on init
+  user: JSON.parse(localStorage.getItem('userInfo')) || null,
+  
+  setAuthenticated: (status) => set({ isAuthenticated: status }),
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  
   logout: () => {
-    set({ user: null, isAuthenticated: false });
-    // In a real app, you would also clear any tokens from localStorage/cookies here.
-    console.log('User logged out');
+    localStorage.removeItem('userInfo');
+    set({ isAuthenticated: false, user: null });
   },
-
-  // A dummy login function to simulate logging in
-  login: (userData) => {
-    set({ user: userData, isAuthenticated: true });
-  }
 }));
 
 export default useAuthStore;

@@ -1,177 +1,427 @@
-import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Camera, X, User, Mail, Calendar, Upload } from "lucide-react";
+
 import useAuthStore from "../../store/useAuthStore";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { Link } from "react-router-dom";
-import InterviewHistoryPage from "./InterviewHistoryPage";
-import useDashboardStore from "../../store/userDashboardStore";
+import useDashboardStore from "../../store/useDashboardStore";
+import useProfileStore from "../../store/useProfileStore";
+
 import { Icons } from "../../components/ui/Icons";
+import Button from "../../components/ui/Button";
+import FormInput from "../../components/ui/FormInput"; // Assuming this exists for the modal
 import { PageContent } from "../../components/ui/PageContent";
-import SettingsPage from "./SettingsPage";
-import { cn } from "../../utils/cn";
+import { SkeletonCard } from "../../components/ui/Skeletons";
+
 import ResumeUploaderPage from "./ResumeUploaderPage";
 import InterviewPage from "./InterviewPage";
 import SavedFeedbackPage from "./SavedFeedbackPage";
 import StatsPage from "./StatsPage";
+import InterviewHistoryPage from "./InterviewHistoryPage";
+
 const pages = {
-  Dashboard: () => <PageContent title="Dashboard" />,
+  Dashboard: () => <DashboardContent />,
   "Interview History": () => <InterviewHistoryPage />,
   "Saved Feedback": () => <SavedFeedbackPage />,
   "Resume Uploader": () => <ResumeUploaderPage />,
   "Start Interview": () => <InterviewPage />,
   Stats: () => <StatsPage />,
-  Settings: () => <SettingsPage />,
 };
 
-// --- LAYOUT COMPONENTS ---
-const Sidebar = () => {
-  const { isSidebarOpen, toggleSidebar, activePage, setActivePage } =
-    useDashboardStore();
-
-  const navItems = [
-    { name: "Dashboard", icon: "Home" },
-    { name: "Interview History", icon: "Clock" },
-    { name: "Saved Feedback", icon: "BookOpen" },
-    { name: "Resume Uploader", icon: "FileText" },
-    { name: "Start Interview", icon: "Play" },
-    { name: "Stats", icon: "BarChart3" },
-    { name: "Settings", icon: "Settings" },
-  ];
-
-  const sidebarVariants = {
-    open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
-    closed: {
-      x: "-100%",
-      transition: { type: "spring", stiffness: 300, damping: 30 },
-    },
-  };
-
-  const SidebarContent = () => (
-    <div className="flex h-full flex-col">
-      <div className="p-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <Icons.Home className="h-8 w-8 text-indigo-500" />
-          <span className="text-xl font-bold text-slate-800 dark:text-white">
-            IntellectHire
-          </span>
-        </Link>
-        <button
-          onClick={toggleSidebar}
-          className="md:hidden p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <Icons.X className="h-6 w-6" />
-        </button>
-      </div>
-      <nav className="mt-8 flex-1 px-2 space-y-1">
-        <LayoutGroup>
-          {navItems.map((item) => {
-            const Icon = Icons[item.icon];
-            const isActive = activePage === item.name;
-
-            if (!Icon) {
-              console.error(
-                `Icon "${item.icon}" not found in Icons object. Available icons:`,
-                Object.keys(Icons)
-              );
-              // Return a fallback icon or skip this item
-              return (
-                <div
-                  key={item.name}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500"
-                >
-                  <span>⚠️</span>
-                  <span>{item.name} (Icon Missing)</span>
-                </div>
-              );
-            }
-
-            return (
-              <motion.button
-                key={item.name}
-                onClick={() => setActivePage(item.name)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium relative",
-                  isActive
-                    ? "text-white"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="active-pill"
-                    className="absolute inset-0 bg-indigo-500 rounded-lg"
-                    style={{ borderRadius: 8 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <Icon className="h-5 w-5 relative z-10" />
-                <span className="relative z-10">{item.name}</span>
-              </motion.button>
-            );
-          })}
-        </LayoutGroup>
-      </nav>
-    </div>
-  );
-
-  return (
-    <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-42 flex-shrink-0">
-        <div className="fixed top-0 left-0 h-full w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">
-          <SidebarContent />
-        </div>
-      </aside>
-
-      {/* Mobile Sidebar */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <>
-            <motion.aside
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={sidebarVariants}
-              className="fixed top-0 left-0 h-full w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 md:hidden"
-            >
-              <SidebarContent />
-            </motion.aside>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={toggleSidebar}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            />
-          </>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
-
-// --- MAIN DASHBOARD COMPONENT ---
 export default function DashboardPage() {
   const { activePage } = useDashboardStore();
-  const CurrentPage = pages[activePage];
-
-  // Add error handling for missing pages
-  if (!CurrentPage) {
-    console.error(`Page "${activePage}" not found in pages object`);
-    return <div>Page not found</div>;
-  }
+  const CurrentPage = pages[activePage] || (() => <div>Page Not Found</div>);
 
   return (
     <div className="min-h-screen w-full flex bg-slate-100 dark:bg-slate-950">
-      <Sidebar /> {/* fixed sidebar with width w-64 or w-40 */}
-      <div className="flex-1 overflow-y-auto md:ml-64">
-        <main className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-start w-full flex-col">
+        <main className="flex-start p-4 sm:p-6 lg:p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
-            <CurrentPage key={activePage} />
+            <motion.div
+              key={activePage}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <CurrentPage />
+            </motion.div>
           </AnimatePresence>
         </main>
       </div>
     </div>
   );
 }
+
+const DashboardContent = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    profile,
+    loading,
+    error,
+    fetchProfile,
+    setProfileField,
+    updateProfile,
+    uploadProfilePicture,
+  } = useProfileStore();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const displayUser = profile || user;
+
+  if (loading && !profile) {
+    return <div>Loading Dashboard...</div>;
+  }
+  if (error) {
+    return <div className="text-red-500">Error: {error}</div>;
+  }
+  if (!displayUser) {
+    return <div>Could not load user profile.</div>;
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
+          Welcome back, {displayUser.fullName}!
+        </h1>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <Icons.Settings className="w-4 h-4" /> Edit Profile
+        </Button>
+      </div>
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1 flex flex-col items-center text-center">
+          {user.photoURL ? (
+            <img
+              src={`http://localhost:5000/${
+                user.photoURL
+              }?key=${new Date().getTime()}`}
+              alt="Avatar"
+              className="w-32 h-32 rounded-full object-cover mb-4"
+            />
+          ) : (
+            <Icons.UserCircle className="w-32 h-32 text-slate-400 mb-4" />
+          )}
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+            {displayUser.fullName}
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400">
+            {displayUser.email}
+          </p>
+        </div>
+        <div className="md:col-span-2 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-lg">
+          <h3 className="font-semibold mb-4 text-slate-700 dark:text-white">
+            Profile Details
+          </h3>
+          <ul className="space-y-2 text-slate-700 dark:text-slate-300">
+            <li>
+              <strong>Graduation Year:</strong> {displayUser.graduationYear}
+            </li>
+            <li>
+              <strong>Member Since:</strong>{" "}
+              {new Date(displayUser.createdAt).toLocaleDateString()}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <AnimatePresence>
+        {isModalOpen && (
+          <ProfileEditModal
+            profile={profile}
+            setProfileField={setProfileField}
+            updateProfile={updateProfile}
+            uploadProfilePicture={uploadProfilePicture}
+            closeModal={() => setIsModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+
+const ProfileEditModal = ({
+  profile,
+  setProfileField,
+  updateProfile,
+  uploadProfilePicture,
+  closeModal,
+  isOpen = true,
+}) => {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuthStore();
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      uploadProfilePicture(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      uploadProfilePicture(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await updateProfile();
+      closeModal();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Mock data for demonstration
+  const mockProfile = profile || {
+    fullName: "John Doe",
+    email: "john@example.com",
+    graduationYear: "2024",
+    photoURL: null,
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeModal}
+          />
+
+          {/* Modal */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+          >
+            {/* Header */}
+            <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </motion.button>
+              <motion.h2
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="text-xl font-bold text-white"
+              >
+                Edit Profile
+              </motion.h2>
+            </div>
+
+            <div className="p-6">
+              {/* Profile Picture Section */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="mb-8"
+              >
+                <div className="flex flex-col items-center">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className={`relative group cursor-pointer ${
+                      isDragOver ? "scale-105" : ""
+                    } transition-transform duration-200`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 border-4 border-white dark:border-gray-600 shadow-lg">
+                      {user.photoURL ? (
+                        <img
+                          src={`http://localhost:5000/${
+                            user.photoURL
+                          }?key=${new Date().getTime()}`}
+                          alt="Avatar"
+                          className="w-32 h-32 rounded-full object-cover"
+                        />
+                      ) : (
+                        <Icons.UserCircle className="w-32 h-32 text-slate-400 mb-4" />
+                      )}
+
+                      {/* Overlay */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center"
+                      >
+                        <Camera size={20} className="text-white" />
+                      </motion.div>
+                    </div>
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                  </motion.div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mt-3 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <Upload size={16} />
+                    Change Photo
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              {/* Form Fields */}
+              <div className="space-y-6">
+                {/* Full Name */}
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <User size={16} className="inline mr-2" />
+                    Full Name
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="text"
+                    value={mockProfile?.fullName || ""}
+                    onChange={(e) =>
+                      setProfileField &&
+                      setProfileField("fullName", e.target.value)
+                    }
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Enter your full name"
+                  />
+                </motion.div>
+
+                {/* Email */}
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <Mail size={16} className="inline mr-2" />
+                    Email Address
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="email"
+                    value={mockProfile?.email || ""}
+                    onChange={(e) =>
+                      setProfileField &&
+                      setProfileField("email", e.target.value)
+                    }
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Enter your email"
+                  />
+                </motion.div>
+
+                {/* Graduation Year */}
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <Calendar size={16} className="inline mr-2" />
+                    Graduation Year
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="text"
+                    value={mockProfile?.graduationYear || ""}
+                    onChange={(e) =>
+                      setProfileField &&
+                      setProfileField("graduationYear", e.target.value)
+                    }
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="e.g., 2024"
+                  />
+                </motion.div>
+              </div>
+
+              {/* Action Buttons */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="flex gap-3 mt-8"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={closeModal}
+                  className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                >
+                  Cancel
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <motion.span
+                    animate={isLoading ? { opacity: 0.7 } : { opacity: 1 }}
+                    className="flex items-center justify-center gap-2"
+                  >
+                    {isLoading && (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                      />
+                    )}
+                    {isLoading ? "Saving..." : "Save Changes"}
+                  </motion.span>
+                </motion.button>
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};

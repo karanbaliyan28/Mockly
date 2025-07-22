@@ -115,7 +115,7 @@ const StatCard = ({ icon: Icon, title, value, change }) => (
 );
 
 const StatsPage = () => {
-  // Dummy data for demonstration
+ 
   const barChartData = [
     { month: "Jan", score: 7.5 },
     { month: "Feb", score: 8.0 },

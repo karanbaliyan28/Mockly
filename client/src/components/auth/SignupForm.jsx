@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangleIcon, CheckCircleIcon } from "lucide-react";
 import Button from "../ui/Button";
+import { Link, useNavigate } from "react-router-dom";
 import FormInput from "../ui/FormInput";
 import useSignupStore from "../../store/useSignupStore";
 
@@ -118,6 +119,17 @@ const SignupForm = () => {
             </Button>
           </div>
         </form>
+        <div className="text-center mt-4 text-sm">
+          <p className="text-slate-600 dark:text-slate-400">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
       </motion.div>
     </div>
   );

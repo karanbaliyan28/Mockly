@@ -1,4 +1,6 @@
 const cn = (...classes) => classes.filter(Boolean).join(" ");
+
+import React from "react";
 import {
   Home,
   Clock,
@@ -9,8 +11,21 @@ import {
   Settings,
   X,
   Menu,
-  Sun,
   LogOut,
+  ChevronDown,
+  Sparkles,
+  Sun,
+  Moon,
+  UserCircle,
+  AlertTriangle,
+  Camera,
+  Bot,
+  Search,
+  BrainCircuit,
+  CheckCircle,
+  UploadCloud,
+  LayoutDashboard, // The missing import
+  MicVocal, // The missing import
 } from "lucide-react";
 export const CameraIcon = (props) => (
   <svg
@@ -26,12 +41,13 @@ export const CameraIcon = (props) => (
     strokeLinejoin="round"
   >
     <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+
     <circle cx="12" cy="13" r="3" />
   </svg>
 );
 
 export const Icons = {
-  Home,
+  Home: LayoutDashboard,
   Clock,
   BookOpen,
   FileText,
@@ -40,7 +56,35 @@ export const Icons = {
   Settings,
   X,
   Menu,
+  LogOut,
+  ChevronDown,
+  Sparkles,
   Sun,
+  Moon,
+  UserCircle,
+  AlertTriangle,
+  Camera,
+  Bot,
+  Home,
+
+  Clock,
+
+  BookOpen,
+
+  FileText,
+
+  Play,
+
+  BarChart3,
+
+  Settings,
+
+  X,
+
+  Menu,
+
+  Sun,
+
   LogOut,
 };
 
@@ -60,6 +104,7 @@ export const BotIcon = (props) => (
     />
   </svg>
 );
+
 export const BarChartIcon = (props) => (
   <svg
     {...props}
@@ -76,6 +121,7 @@ export const BarChartIcon = (props) => (
     />
   </svg>
 );
+
 export const FileTextIcon = (props) => (
   <svg
     {...props}
@@ -90,6 +136,7 @@ export const FileTextIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M14 2v6h6m-4 5H8m8 4H8m2-8H8"
       stroke="currentColor"
@@ -99,6 +146,7 @@ export const FileTextIcon = (props) => (
     />
   </svg>
 );
+
 export const SparklesIcon = (props) => (
   <svg
     {...props}
@@ -113,6 +161,7 @@ export const SparklesIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M5 3v4m14 17v-4M3 5h4m11 14h4"
       stroke="currentColor"
@@ -122,6 +171,7 @@ export const SparklesIcon = (props) => (
     />
   </svg>
 );
+
 export const SunIcon = (props) => (
   <svg
     {...props}
@@ -136,6 +186,7 @@ export const SunIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
       stroke="currentColor"
@@ -145,6 +196,7 @@ export const SunIcon = (props) => (
     />
   </svg>
 );
+
 export const MoonIcon = (props) => (
   <svg
     {...props}
@@ -161,6 +213,7 @@ export const MoonIcon = (props) => (
     />
   </svg>
 );
+
 export const WandSparklesIcon = (props) => (
   <svg
     {...props}
@@ -177,6 +230,7 @@ export const WandSparklesIcon = (props) => (
     />
   </svg>
 );
+
 export const FileSearchIcon = (props) => (
   <svg
     {...props}
@@ -191,6 +245,7 @@ export const FileSearchIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M14 2v6h6m-3.5 8a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"
       stroke="currentColor"
@@ -198,6 +253,7 @@ export const FileSearchIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="m21 21-2-2"
       stroke="currentColor"
@@ -207,6 +263,7 @@ export const FileSearchIcon = (props) => (
     />
   </svg>
 );
+
 export const BrainCircuitIcon = (props) => (
   <svg
     {...props}
@@ -221,6 +278,7 @@ export const BrainCircuitIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M12 21a9 9 0 0 0 6.645-15.632M12 3a9 9 0 0 0-6.645 15.632M12 16.5v-1m0-3v-1m0-3v-1m4.5 4h-1m-3.5 0h-1m-3.5 0h-1"
       stroke="currentColor"
@@ -230,6 +288,7 @@ export const BrainCircuitIcon = (props) => (
     />
   </svg>
 );
+
 export const CheckCircleIcon = (props) => (
   <svg
     {...props}
@@ -244,6 +303,7 @@ export const CheckCircleIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M22 4 12 14.01l-3-3"
       stroke="currentColor"
@@ -253,6 +313,7 @@ export const CheckCircleIcon = (props) => (
     />
   </svg>
 );
+
 export const AlertTriangleIcon = (props) => (
   <svg
     {...props}
@@ -267,6 +328,7 @@ export const AlertTriangleIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M12 9v4m0 4h.01"
       stroke="currentColor"
@@ -276,6 +338,7 @@ export const AlertTriangleIcon = (props) => (
     />
   </svg>
 );
+
 // src/components/ui/icons.jsx
 
 export const LayoutDashboardIcon = (props) => (
@@ -292,8 +355,11 @@ export const LayoutDashboardIcon = (props) => (
     strokeLinejoin="round"
   >
     <rect width="7" height="9" x="3" y="3" rx="1" />
+
     <rect width="7" height="5" x="14" y="3" rx="1" />
+
     <rect width="7" height="9" x="14" y="12" rx="1" />
+
     <rect width="7" height="5" x="3" y="16" rx="1" />
   </svg>
 );
@@ -312,8 +378,11 @@ export const MicVocalIcon = (props) => (
     strokeLinejoin="round"
   >
     <path d="M12 8V4a.5.5 0 0 0-1 0v4a.5.5 0 0 0 1 0Z" />
+
     <path d="M12 18.5a6.5 6.5 0 0 0 6.5-6.5v-7a6.5 6.5 0 0 0-13 0v7a6.5 6.5 0 0 0 6.5 6.5Z" />
+
     <path d="M12 18.5v3.5" />
+
     <path d="M8 22h8" />
   </svg>
 );
@@ -332,6 +401,7 @@ export const SettingsIcon = (props) => (
     strokeLinejoin="round"
   >
     <path d="..." />
+
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
@@ -350,7 +420,9 @@ export const MenuIcon = (props) => (
     strokeLinejoin="round"
   >
     <line x1="4" x2="20" y1="12" y2="12" />
+
     <line x1="4" x2="20" y1="6" y2="6" />
+
     <line x1="4" x2="20" y1="18" y2="18" />
   </svg>
 );
@@ -369,7 +441,9 @@ export const LogOutIcon = (props) => (
     strokeLinejoin="round"
   >
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+
     <polyline points="16 17 21 12 16 7" />
+
     <line x1="21" x2="9" y1="12" y2="12" />
   </svg>
 );
@@ -405,6 +479,7 @@ export const DashboardIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M10 14H3V21H10V14Z"
       stroke="currentColor"
@@ -412,6 +487,7 @@ export const DashboardIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M21 3H14V10H21V3Z"
       stroke="currentColor"
@@ -419,6 +495,7 @@ export const DashboardIcon = (props) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <path
       d="M10 3H3V10H10V3Z"
       stroke="currentColor"
@@ -428,6 +505,7 @@ export const DashboardIcon = (props) => (
     />
   </svg>
 );
+
 export const HistoryIcon = (props) => (
   <svg
     {...props}
@@ -444,6 +522,7 @@ export const HistoryIcon = (props) => (
     />
   </svg>
 );
+
 export const FeedbackIcon = (props) => (
   <svg
     {...props}
@@ -460,6 +539,7 @@ export const FeedbackIcon = (props) => (
     />
   </svg>
 );
+
 export const UploadIcon = (props) => (
   <svg
     {...props}
@@ -476,6 +556,7 @@ export const UploadIcon = (props) => (
     />
   </svg>
 );
+
 export const StartIcon = (props) => (
   <svg
     {...props}
@@ -492,6 +573,149 @@ export const StartIcon = (props) => (
     />
   </svg>
 );
+
+export const UserCircleIcon = (props) => (
+  <svg
+    {...props}
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
+    />
+  </svg>
+);
+
+// components/Icons.jsx
+
+export const DownloadIcon = (props) => (
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const UserIcon = (props) => (
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="12"
+      cy="7"
+      r="4"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const CalendarIcon = (props) => (
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="3"
+      y="4"
+      width="18"
+      height="18"
+      rx="2"
+      ry="2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <line
+      x1="16"
+      y1="2"
+      x2="16"
+      y2="6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <line
+      x1="8"
+      y1="2"
+      x2="8"
+      y2="6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <line
+      x1="3"
+      y1="10"
+      x2="21"
+      y2="10"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const BriefcaseIcon = (props) => (
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="2"
+      y="7"
+      width="20"
+      height="14"
+      rx="2"
+      ry="2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const StatsIcon = (props) => (
   <svg
     {...props}
@@ -508,6 +732,7 @@ export const StatsIcon = (props) => (
     />
   </svg>
 );
+
 export const LogoutIcon = (props) => (
   <svg
     {...props}
@@ -543,3 +768,11 @@ export const CloseIcon = (props) => (
 );
 
 
+export const HomeIcon = Home;
+export const ClockIcon = Clock;
+export const BookOpenIcon = BookOpen;
+
+export const PlayIcon = Play;
+export const BarChart3Icon = BarChart3;
+
+export const XIcon = X;

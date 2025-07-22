@@ -1,6 +1,4 @@
-import React from 'react';
 
-// Components ko unki respective files se import karein
 import Header from '../layout/Header';
 import Hero from '../sections/Hero';
 import Features from '../sections/Features';

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-import useAuthStore from "./useAuthStore"; // Auth store ko import karein
+import useAuthStore from "./useAuthStore"; // Import your auth store
 
 export const useLoginStore = create((set, get) => ({
   userInput: {
@@ -11,22 +11,20 @@ export const useLoginStore = create((set, get) => ({
   error: null,
   success: false,
 
-  // Action to update a specific field in the userInput state
   setLoginInput: (field, value) => {
     set((state) => ({
       userInput: { ...state.userInput, [field]: value },
-      error: null, // Clear error on new input
+      error: null,
     }));
   },
 
-  // Action to handle the entire login process
   loginUser: async () => {
     set({ loading: true, error: null, success: false });
     const { userInput, resetForm } = get();
 
-    // --- Basic Validation ---
+    // Basic Validation
     if (!userInput.email || !userInput.password) {
-      set({ loading: false, error: `Email and Password cannot be empty.` });
+      set({ loading: false, error: "Email and Password cannot be empty." });
       return;
     }
     if (!/\S+@\S+\.\S+/.test(userInput.email)) {
@@ -35,39 +33,39 @@ export const useLoginStore = create((set, get) => ({
     }
 
     try {
-      // --- START OF CHANGE ---
-      // setTimeout ko real axios call se replace kiya gaya hai
-      const response = await axios.post("/api/auth/login", userInput);
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
 
-      // Successful login ke baad, auth store mein user data set karein
-      const { user, token } = response.data; // Maan lijiye backend user aur token bhejta hai
-      useAuthStore.getState().login(user); // Update global auth state
+      const { data } = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        userInput,
+        config
+      );
 
-      // Agar token milta hai to use save karein (optional, but good practice)
-      if (token) {
-        localStorage.setItem("authToken", token);
-      }
-      // --- END OF CHANGE ---
+      // Save to localStorage
+      localStorage.setItem("userInfo", JSON.stringify(data));
 
-      console.log("Login successful for:", user.email);
+      // ✅ UPDATE AUTH STORE - This is what was missing!
+      useAuthStore.getState().setAuthenticated(true);
+      useAuthStore.getState().setUser(data); // If you have a setUser action
+
+      console.log("Login successful. User info saved to local storage.");
       set({ loading: false, success: true });
 
-      // Reset the form after a short delay to show the success message
       setTimeout(() => {
         resetForm();
-        // Ab user automatically dashboard par redirect ho jayega
-        // kyunki ProtectedRoute isAuthenticated state ko check karega.
-      }, 2000);
+      }, 1500);
     } catch (apiError) {
-      // Handle actual API errors
       const errorMessage =
         apiError.response?.data?.message ||
-        "Invalid credentials. Please try again.";
+        "Invalid email or password. Please try again.";
       set({ loading: false, error: errorMessage });
     }
   },
 
-  // Action to reset the form state
   resetForm: () => {
     set({
       userInput: { email: "", password: "" },

@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import useInterviewStore from "../../store/useInterviewStore";
-import Button from "../../components/ui/Button"; // Assuming you have this
-import { SkeletonCard } from "../../components/ui/Skeletons"; // Assuming you have this
-import Header from "../layout/Header";
+import Button from "../../components/ui/Button";
 
 // --- Icons ---
 const MicIcon = (props) => (
@@ -29,6 +27,7 @@ const MicIcon = (props) => (
     />
   </svg>
 );
+
 const SendIcon = (props) => (
   <svg
     {...props}
@@ -46,8 +45,7 @@ const SendIcon = (props) => (
   </svg>
 );
 
-// Fixed ThumbsUpIcon with proper SVG path
-const ThumbsUpIcon = (props) => (
+const SparklesIcon = (props) => (
   <svg
     {...props}
     viewBox="0 0 24 24"
@@ -55,7 +53,33 @@ const ThumbsUpIcon = (props) => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+      d="M12 3L9.65 9.65L3 12l6.65 2.35L12 21l2.35-6.65L21 12l-6.65-2.35L12 3z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const UserIcon = (props) => (
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="12"
+      cy="7"
+      r="4"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
@@ -64,293 +88,378 @@ const ThumbsUpIcon = (props) => (
   </svg>
 );
 
-// Fixed ThumbsDownIcon with proper SVG path
-const ThumbsDownIcon = (props) => (
-  <svg
-    {...props}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+// --- User Avatar Component ---
+const UserAvatar = ({ user, size = "default" }) => {
+  const sizeClasses = {
+    sm: "w-6 h-6",
+    default: "w-8 h-8",
+    lg: "w-10 h-10",
+  };
 
-const PauseIcon = (props) => (
-  <svg
-    {...props}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M6 4h4v16H6zM14 4h4v16h-4z"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-const PlayIcon = (props) => (
-  <svg
-    {...props}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="m5 3 14 9-14 9V3z"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-const SkipForwardIcon = (props) => (
-  <svg
-    {...props}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="m5 4 10 8-10 8V4zM19 5v14"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-const StopCircleIcon = (props) => (
-  <svg
-    {...props}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-    <path d="M9 9h6v6H9z" fill="currentColor" />
-  </svg>
-);
-
-// --- UI Sub-Components ---
-
-const QuestionViewer = ({ question, questionNumber, totalQuestions }) => (
-  <div className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 backdrop-blur-lg">
-    <p className="text-sm font-medium text-indigo-400 mb-2">
-      Question {questionNumber} of {totalQuestions}
-    </p>
-    <AnimatePresence mode="wait">
-      <motion.h2
-        key={question}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.5 }}
-        className="text-2xl md:text-3xl font-semibold text-white"
-      >
-        {question}
-      </motion.h2>
-    </AnimatePresence>
-  </div>
-);
-
-const AnswerInput = () => {
-  const {
-    userAnswer,
-    setUserAnswer,
-    submitAnswer,
-    isProcessingAnswer,
-    interviewState,
-  } = useInterviewStore();
-  const isDisabled = isProcessingAnswer || interviewState !== "in_progress";
-
-  return (
-    <div className="relative">
-      <textarea
-        value={userAnswer}
-        onChange={(e) => setUserAnswer(e.target.value)}
-        placeholder="Type your answer here..."
-        disabled={isDisabled}
-        className="w-full h-40 p-4 pr-24 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all resize-none text-slate-800 dark:text-slate-200 disabled:opacity-50"
+  if (user?.avatar) {
+    return (
+      <img
+        src={user.avatar}
+        alt={user.name || "User"}
+        className={`${sizeClasses[size]} rounded-full object-cover border-2 border-gray-200 dark:border-gray-600`}
       />
-      <div className="absolute top-4 right-4 flex flex-col gap-2">
-        <Button onClick={submitAnswer} disabled={isDisabled} className="!p-3">
-          {isProcessingAnswer ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <SendIcon className="w-5 h-5" />
-          )}
-        </Button>
-        <Button variant="outline" disabled={isDisabled} className="!p-3">
-          <MicIcon className="w-5 h-5" />
-        </Button>
-      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0`}
+    >
+      <UserIcon className="w-1/2 h-1/2 text-white" />
     </div>
   );
 };
 
-const AIFeedback = () => {
-  const { aiFeedback, getNextQuestion } = useInterviewStore();
-  if (!aiFeedback) return null;
+// --- AI Avatar Component ---
+const AIAvatar = ({ size = "default" }) => {
+  const sizeClasses = {
+    sm: "w-6 h-6",
+    default: "w-8 h-8",
+    lg: "w-10 h-10",
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      className="bg-green-500/10 p-6 rounded-2xl border border-green-500/20"
+    <div
+      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center flex-shrink-0`}
     >
-      <h3 className="font-bold text-lg text-green-300">AI Feedback</h3>
-      <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-        <p>
-          <strong className="text-slate-300">Score:</strong>{" "}
-          <span className="font-semibold text-white">
-            {aiFeedback.score}/10
-          </span>
-        </p>
-        <p>
-          <strong className="text-slate-300">Clarity:</strong>{" "}
-          <span className="font-semibold text-white">{aiFeedback.clarity}</span>
-        </p>
-        <p>
-          <strong className="text-slate-300">Relevance:</strong>{" "}
-          <span className="font-semibold text-white">
-            {aiFeedback.relevance}
-          </span>
-        </p>
-      </div>
-      <p className="mt-4 text-slate-300 text-sm">
-        <strong className="text-white">Suggestion:</strong>{" "}
-        {aiFeedback.suggestion}
-      </p>
-      <div className="flex items-center justify-between mt-6">
-        <div className="flex gap-2">
-          <Button variant="outline" className="!p-2">
-            <ThumbsUpIcon className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" className="!p-2">
-            <ThumbsDownIcon className="w-4 h-4" />
-          </Button>
+      <SparklesIcon className="w-1/2 h-1/2 text-white" />
+    </div>
+  );
+};
+
+// --- Conversation Turn Component ---
+const ConversationTurn = ({ turn, user }) => {
+  return (
+    <div className="space-y-4">
+      {/* AI's Question */}
+      <div className="flex gap-3 items-start">
+        <AIAvatar />
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl rounded-tl-md shadow-sm max-w-[85%] lg:max-w-[75%]">
+          <p className="text-gray-800 dark:text-gray-200 leading-relaxed">
+            {turn.question}
+          </p>
         </div>
-        <Button onClick={getNextQuestion}>Next Question</Button>
       </div>
-    </motion.div>
-  );
-};
 
-const InterviewController = () => {
-  const { interviewState, togglePause, skipQuestion, endInterview } =
-    useInterviewStore();
-  const isPaused = interviewState === "paused";
+      {/* User's Answer */}
+      {turn.answer && (
+        <div className="flex gap-3 items-start flex-row-reverse">
+          <UserAvatar user={user} />
+          <div className="bg-blue-600 dark:bg-blue-700 p-4 rounded-2xl rounded-tr-md shadow-sm max-w-[85%] lg:max-w-[75%]">
+            <p className="text-white leading-relaxed">{turn.answer}</p>
+          </div>
+        </div>
+      )}
 
-  return (
-    <div className="flex items-center justify-center gap-4 mt-8">
-      <Button
-        variant="outline"
-        onClick={togglePause}
-        className="!p-3 !rounded-full"
-      >
-        {isPaused ? (
-          <PlayIcon className="w-5 h-5" />
-        ) : (
-          <PauseIcon className="w-5 h-5" />
-        )}
-      </Button>
-      <Button
-        variant="outline"
-        onClick={skipQuestion}
-        className="!p-3 !rounded-full"
-      >
-        <SkipForwardIcon className="w-5 h-5" />
-      </Button>
-      <Button
-        variant="danger"
-        onClick={endInterview}
-        className="!p-3 !rounded-full bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30"
-      >
-        <StopCircleIcon className="w-5 h-5" />
-      </Button>
+      {/* AI's Feedback */}
+      {turn.feedback && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex gap-3 items-start ml-11"
+        >
+          <div className="text-sm text-gray-600 dark:text-gray-400 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-800 max-w-[85%] lg:max-w-[75%]">
+            <span className="font-medium text-amber-700 dark:text-amber-400">
+              💡 Feedback:{" "}
+            </span>
+            <span>{turn.feedback}</span>
+          </div>
+        </motion.div>
+      )}
     </div>
-  );
-};
-
-const InterviewFinished = () => {
-  const { startInterview } = useInterviewStore();
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="text-center bg-slate-800/50 p-8 rounded-2xl border border-slate-700"
-    >
-      <h2 className="text-3xl font-bold text-white">Interview Complete!</h2>
-      <p className="mt-4 text-slate-300">
-        Great job! You can view your full report in your Interview History.
-      </p>
-      <div className="mt-8 flex gap-4 justify-center">
-        <Button>View Full Report</Button>
-        <Button variant="outline" onClick={startInterview}>
-          Start Another Interview
-        </Button>
-      </div>
-    </motion.div>
   );
 };
 
 const InterviewPage = () => {
-  const {
-    questions,
-    currentQuestionIndex,
-    interviewState,
-    isLoadingNextQuestion,
-    startInterview,
-  } = useInterviewStore();
+  // Store selectors
+  const interviewState = useInterviewStore((state) => state.interviewState);
+  const loading = useInterviewStore((state) => state.loading);
+  const error = useInterviewStore((state) => state.error);
+  const conversation = useInterviewStore((state) => state.conversation);
+  const role = useInterviewStore((state) => state.role);
 
+  // Actions
+  const setRole = useInterviewStore((state) => state.setRole);
+  const startInterviewConversation = useInterviewStore(
+    (state) => state.startInterviewConversation
+  );
+  const submitAnswer = useInterviewStore((state) => state.submitAnswer);
+  const endInterview = useInterviewStore((state) => state.endInterview);
+
+  const [currentAnswer, setCurrentAnswer] = useState("");
+  const chatContainerRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  // Mock user data - replace with actual user data from your auth system
+  const currentUser = {
+    name: "John Doe",
+    avatar: null, // Set to actual avatar URL if available
+  };
+
+  // Auto-scroll to bottom of chat container only
   useEffect(() => {
-    startInterview();
-  }, [startInterview]);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [conversation]);
 
-  // Add safety check for questions array and current index
-  const currentQuestion =
-    questions && questions.length > 0 && currentQuestionIndex < questions.length
-      ? questions[currentQuestionIndex]
-      : null;
+  // Auto-resize textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + "px";
+    }
+  }, [currentAnswer]);
 
+  const handleStart = () => {
+    if (role) {
+      startInterviewConversation();
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (currentAnswer.trim() && !loading) {
+      submitAnswer(currentAnswer);
+      setCurrentAnswer("");
+    }
+  };
+
+  // --- Render different states ---
+
+  if (interviewState === "not_started") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md w-full border border-gray-200 dark:border-gray-700">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                <SparklesIcon className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold mb-2">Start Interview</h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Select a role to begin your mock interview session.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Choose Role
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  <option value="">Select a Role...</option>
+                  <option value="Frontend Developer">Frontend Developer</option>
+                  <option value="Backend Developer">Backend Developer</option>
+                  <option value="Full Stack Developer">
+                    Full Stack Developer
+                  </option>
+                </select>
+              </div>
+
+              <Button
+                onClick={handleStart}
+                disabled={!role || loading}
+                className="w-full h-12 text-base font-medium"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Starting Interview...
+                  </div>
+                ) : (
+                  "Start Interview"
+                )}
+              </Button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-red-600 dark:text-red-400 text-sm">
+                  {error}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (interviewState === "loading") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400 text-lg">
+            Preparing your interview...
+          </p>
+          <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">
+            This may take a few moments
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (interviewState === "error") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-6">
+        <div className="text-center bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 max-w-md w-full">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <span className="text-red-500 text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-2xl font-bold text-red-500 dark:text-red-400 mb-4">
+            Something went wrong
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {error || "We encountered an unexpected error. Please try again."}
+          </p>
+          <Button onClick={() => window.location.reload()} className="w-full">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (interviewState === "finished") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-6">
+        <div className="text-center bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 max-w-md w-full">
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <span className="text-green-500 text-2xl">🎉</span>
+          </div>
+          <h2 className="text-2xl font-bold text-green-500 dark:text-green-400 mb-4">
+            Interview Complete!
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Great job! Your interview session has been completed successfully.
+          </p>
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              Saving your results...
+            </div>
+          ) : (
+            <Button
+              onClick={() => (window.location.href = "/dashboard")}
+              className="w-full"
+            >
+              View Results
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Active interview state - NO FULL SCREEN LAYOUT
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8 flex items-center justify-center">
-      {/* <Header/> */}
-      <div className="w-full max-w-3xl mx-auto">
-        {interviewState === "finished" ? (
-          <InterviewFinished />
-        ) : (
-          <div className="space-y-8">
-            {isLoadingNextQuestion || !currentQuestion ? (
-              <SkeletonCard />
-            ) : (
-              <QuestionViewer
-                question={currentQuestion}
-                questionNumber={currentQuestionIndex + 1}
-                totalQuestions={questions.length}
-              />
-            )}
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+      {/* Fixed Header - Always visible */}
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex-shrink-0">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Interview Session
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Role:{" "}
+              <span className="font-medium text-blue-600 dark:text-blue-400">
+                {role}
+              </span>
+            </p>
+          </div>
+          <Button onClick={endInterview} variant="danger" size="sm">
+            End Interview
+          </Button>
+        </div>
 
-            {interviewState === "awaiting_feedback" ? (
-              <AIFeedback />
-            ) : (
-              <AnswerInput />
-            )}
-
-            {interviewState !== "awaiting_feedback" && <InterviewController />}
+        {error && (
+          <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
           </div>
         )}
+      </div>
+
+      {/* Scrollable Chat Container - Only this scrolls */}
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-6"
+      >
+        <div className="max-w-4xl mx-auto space-y-6">
+          {conversation.length === 0 ? (
+            <div className="text-center py-12">
+              <AIAvatar size="lg" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mt-4">
+                Ready to start your interview?
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                I'll ask you questions about {role} role. Answer as best as you
+                can!
+              </p>
+            </div>
+          ) : (
+            conversation.map((turn, index) => (
+              <ConversationTurn key={index} turn={turn} user={currentUser} />
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Fixed Input Area - Always visible */}
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex-shrink-0">
+        <div className="max-w-4xl mx-auto">
+          <form onSubmit={handleSubmit}>
+            <div className="flex gap-4 items-end">
+              <div className="flex-1">
+                <textarea
+                  ref={textareaRef}
+                  value={currentAnswer}
+                  onChange={(e) => setCurrentAnswer(e.target.value)}
+                  placeholder={
+                    loading ? "AI is thinking..." : "Type your answer here..."
+                  }
+                  disabled={loading}
+                  className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[60px] max-h-[120px]"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }
+                  }}
+                  rows={2}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading || !currentAnswer.trim()}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white p-4 rounded-xl transition-colors flex-shrink-0 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <SendIcon className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
+              Press Enter to send • Shift + Enter for new line
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );

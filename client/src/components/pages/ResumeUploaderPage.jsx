@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import useResumeStore from "../../store/userResumeStore"; // Sahi path use karein
+import useResumeStore from "../../store/useResumeStore";
 import Button from "../../components/ui/Button";
 import { PageContent } from "../../components/ui/PageContent";
 import { SkeletonCard } from "../../components/ui/Skeletons";
 
-// --- Icons ---
+// --- Icons (These are your components, unchanged) ---
 const UploadCloudIcon = (props) => (
   <svg
     {...props}
@@ -117,7 +117,6 @@ const SparklesIcon = (props) => (
   </svg>
 );
 
-// --- Drag & Drop Component ---
 const DragDropZone = () => {
   const { handleFileSelect, error } = useResumeStore();
   const [isDragging, setIsDragging] = useState(false);
@@ -201,7 +200,6 @@ const DragDropZone = () => {
   );
 };
 
-// --- File Preview Component ---
 const FilePreview = () => {
   const { file, isUploading, success, removeFile, analyzeResume, isAnalyzing } =
     useResumeStore();
@@ -279,20 +277,20 @@ const FilePreview = () => {
   );
 };
 
-// --- AI Feedback Component ---
 const AIFeedbackDisplay = () => {
-  const { isAnalyzing, aiFeedback } = useResumeStore();
+  const { isAnalyzing, analysisResult } = useResumeStore();
 
-  if (isAnalyzing) {
+  if (isAnalyzing)
     return (
       <div className="mt-8">
         <SkeletonCard />
       </div>
     );
-  }
+  if (!analysisResult) return null;
 
-  if (!aiFeedback) return null;
-
+  // --- THIS IS THE FIX ---
+  // The component is now updated to only display the data that our
+  // current backend simulation provides ('summary' and 'analysis' stats).
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -308,62 +306,43 @@ const AIFeedbackDisplay = () => {
           <h4 className="font-semibold text-slate-700 dark:text-slate-200">
             Summary
           </h4>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {aiFeedback.summary}
+          <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
+            {analysisResult.summary}
           </p>
+          <div className="text-xs mt-2 text-slate-400">
+            (Pages: {analysisResult.analysis.pages}, Words:{" "}
+            {analysisResult.analysis.words})
+          </div>
         </div>
-        <div>
-          <h4 className="font-semibold text-green-600 dark:text-green-400">
-            Strengths
-          </h4>
-          <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1 mt-1">
-            {aiFeedback.strengths.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-semibold text-amber-600 dark:text-amber-400">
-            Areas for Improvement
-          </h4>
-          <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1 mt-1">
-            {aiFeedback.improvements.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </div>
+        {/* The sections for 'strengths' and 'improvements' that caused the crash are removed for now. */}
       </div>
     </motion.div>
   );
 };
 
-// --- Main Page ---
 const ResumeUploaderPage = () => {
   const { file } = useResumeStore();
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] py-12 px-4 sm:px-6 lg:px-8">
-      <PageContent title="Resume Uploader">
-        <div className="max-w-xl mx-auto">
-          <p className="text-center text-slate-600 dark:text-slate-400 mb-8">
-            Upload your resume to get personalized feedback and tailored
-            interview questions from our AI.
-          </p>
-          <AnimatePresence mode="wait">
-            {file ? (
-              <motion.div key="preview" className="w-full">
-                <FilePreview />
-              </motion.div>
-            ) : (
-              <motion.div key="uploader" className="w-full">
-                <DragDropZone />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <AIFeedbackDisplay />
-        </div>
-      </PageContent>
-    </div>
+    <PageContent title="Resume Uploader">
+      <div className="max-w-xl mx-auto">
+        <p className="text-center text-slate-600 dark:text-slate-400 mb-8">
+          Upload your resume to get personalized feedback and tailored interview
+          questions from our AI.
+        </p>
+        <AnimatePresence mode="wait">
+          {file ? (
+            <motion.div key="preview" className="w-full">
+              <FilePreview />
+            </motion.div>
+          ) : (
+            <motion.div key="uploader" className="w-full">
+              <DragDropZone />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AIFeedbackDisplay />
+      </div>
+    </PageContent>
   );
 };
 

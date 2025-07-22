@@ -1,12 +1,9 @@
 import { create } from "zustand";
-import axios from "axios";
-
-// Assume your backend is running on the same server, or configure a base URL
-// axios.defaults.baseURL = 'http://localhost:5000'; // Example for local development
+import api from "../api/api"; // Import our new authenticated api client
 
 const useSignupStore = create((set, get) => ({
   userInput: {
-    username: "",
+    // The backend doesn't use a 'username', so we can remove it for now
     fullName: "",
     email: "",
     graduationYear: "",
@@ -27,7 +24,7 @@ const useSignupStore = create((set, get) => ({
     set({ loading: true, error: null, success: false });
     const { userInput, resetForm } = get();
 
-    // --- Validation (remains the same) ---
+    // --- Validation ---
     for (const key in userInput) {
       if (!userInput[key]) {
         set({
@@ -37,27 +34,26 @@ const useSignupStore = create((set, get) => ({
         return;
       }
     }
-
     if (!/\S+@\S+\.\S+/.test(userInput.email)) {
       set({ loading: false, error: "Please enter a valid email address." });
       return;
     }
 
     try {
-      // --- START OF CHANGE ---
-      // setTimeout ko real axios call se replace kiya gaya hai
-      const response = await axios.post("/api/auth/signup", userInput);
-      // --- END OF CHANGE ---
+      // Use our configured 'api' client to make the request
+      const { data } = await api.post("/auth/signup", userInput);
 
-      console.log("Signup successful:", response.data); // Log the actual response from backend
+      // --- KEY CHANGE ---
+      // On successful signup, automatically log the user in
+      // by saving their info and token to local storage.
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      console.log("Signup successful, user is now logged in:", data);
       set({ loading: false, success: true });
-
-      // Assuming you are using a library like react-hot-toast
-      // toast.success("Signup successful!");
 
       setTimeout(() => {
         resetForm();
-        // Optionally, redirect the user here
+        // The app will now see the user as logged in and can redirect them.
       }, 2000);
     } catch (apiError) {
       const errorMessage =
@@ -66,11 +62,9 @@ const useSignupStore = create((set, get) => ({
     }
   },
 
-  // 🔄 Reset Form
   resetForm: () => {
     set({
       userInput: {
-        username: "",
         fullName: "",
         email: "",
         graduationYear: "",

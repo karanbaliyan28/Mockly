@@ -1,13 +1,25 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import Button from "../ui/Button";
 import SignupForm from "../auth/SignupForm";
 import useSignupStore from "../../store/useSignupStore";
-
+import useAuthStore from "../../store/useAuthStore"; // Import the main auth store
 
 const SignupPage = () => {
   const resetForm = useSignupStore((state) => state.resetForm);
+  const navigate = useNavigate(); // Hook for navigation
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated); // Get the auth status
 
+  // This effect will run whenever the user's authentication status changes.
+  useEffect(() => {
+    if (isAuthenticated) {
+      // If the user becomes authenticated (after successful signup),
+      // redirect them to the dashboard.
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  // This effect resets the form when the component first loads.
   useEffect(() => {
     resetForm();
     return () => {
@@ -18,7 +30,6 @@ const SignupPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-4 left-4">
-        {/* Button ko Link se wrap kiya gaya hai */}
         <Link to="/">
           <Button variant="outline">Back to Home</Button>
         </Link>
